@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isVerified() && (
+        request.auth.token.email == 's114017@ms2.kghs.kh.edu.tw' ||
+        request.auth.token.email.matches('.*@ms2\\.kghs\\.kh\\.edu\\.tw$') ||
+        request.auth.token.email.matches('.*@kghs\\.kh\\.edu\\.tw$') ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidCelebration(data) {
+      return data.updatedAt is number;
+    }
+
+    // Connectivity test probe
+    match /test/{testId} {
+      allow get: if isValidId(testId);
+    }
+
+    // Celebration real-time dataset
+    match /celebrations/{celebrationId} {
+      // Public real-time read for all devices to receive updates instantly
+      allow get: if isValidId(celebrationId);
+      allow list: if false;
+      // Protected writes for authorized school admins
+      allow create: if isValidId(celebrationId) && isAdmin() && isValidCelebration(incoming());
+      allow update: if isValidId(celebrationId) && isAdmin() && isValidCelebration(incoming());
+      allow delete: if isValidId(celebrationId) && isAdmin();
+    }
+
+    // Admin role definitions
+    match /admins/{adminId} {
+      allow get: if isValidId(adminId) && isAdmin();
+      allow list: if false;
+      allow write: if isValidId(adminId) && isAdmin();
+    }
+  }
+}

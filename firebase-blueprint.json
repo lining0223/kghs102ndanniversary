@@ -1,0 +1,110 @@
+{
+  "entities": {
+    "celebration": {
+      "title": "School Celebration Data",
+      "description": "Comprehensive dataset for Kaohsiung Girls High School 102nd Anniversary Celebration, Sports Day, and Fair",
+      "type": "object",
+      "properties": {
+        "updatedAt": {
+          "type": "number",
+          "description": "Timestamp in milliseconds when the celebration data was last updated"
+        },
+        "announcement": {
+          "type": "object",
+          "description": "Top marquee celebration announcement message"
+        },
+        "activities": {
+          "type": "array",
+          "description": "List of sports competition events and details"
+        },
+        "schedules": {
+          "type": "array",
+          "description": "Schedule timetable for sports day"
+        },
+        "checkinSchedules": {
+          "type": "array",
+          "description": "Check-in timetable for athletes"
+        },
+        "honorRoll": {
+          "type": "array",
+          "description": "Honor roll and awards for competitions"
+        },
+        "interviews": {
+          "type": "array",
+          "description": "Special interview articles from grades 1 and 2"
+        },
+        "liveNews": {
+          "type": "array",
+          "description": "Live news flashes and updates during celebration day"
+        },
+        "weekActivities": {
+          "type": "array",
+          "description": "Celebration week events and activities"
+        },
+        "booths": {
+          "type": "array",
+          "description": "Fair booths list by class"
+        },
+        "boothCategories": {
+          "type": "array",
+          "description": "Categories for fair booths"
+        },
+        "heroImage": {
+          "type": "string",
+          "description": "URL or path of the top hero banner image",
+          "maxLength": 5000000
+        },
+        "boothMapImage": {
+          "type": "string",
+          "description": "URL or path of the fair map layout image",
+          "maxLength": 5000000
+        },
+        "albums": {
+          "type": "array",
+          "description": "Official photo album links and covers"
+        },
+        "homeCards": {
+          "type": "object",
+          "description": "Customized headlines and descriptions for home feature cards"
+        },
+        "buttonImages": {
+          "type": "object",
+          "description": "Card thumbnail images"
+        }
+      },
+      "required": ["updatedAt"]
+    },
+    "admin": {
+      "title": "Admin User",
+      "description": "Administrator account record authorized to edit celebration content",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Administrator Google account email",
+          "maxLength": 256
+        },
+        "role": {
+          "type": "string",
+          "description": "Admin role identifier",
+          "enum": ["admin", "superadmin"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/celebrations/{celebrationId}": {
+      "schema": "celebration",
+      "description": "Celebration configuration and content document synchronized in real time"
+    },
+    "/admins/{adminId}": {
+      "schema": "admin",
+      "description": "Registered admin credentials and permissions"
+    }
+  }
+}
